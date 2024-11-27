@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="/styles/reset.css">
+    <link rel="stylesheet" href="/styles/post.css">
+    <link rel="stylesheet" href="/styles/header.css">
+
+    <title>post</title>
+</head>
+<body>
+<div id="root">
+    <header id="header"></header>
+    <main id="main">
+        <section id="main-header">
+            <label>
+                <input placeholder="Кто ищет - тот найдет" type="search" name="search-post" id="search-post">
+            </label>
+            <label>
+                <input placeholder="Кто ищет - тот найдет" type="search" name="search-post-by-title"
+                       id="search-post-by-title">
+            </label>
+            <a href="/post/create">Перейти на форму создания постов</a>
+        </section>
+
+        <section>
+            <div id="render-search-result"></div>
+        </section>
+
+        <section>
+            <div id="post-container"></div>
+        </section>
+    </main>
+</div>
+<script src="/js/renderAllPosts.js" type="module" defer></script>
+<script src="/js/search.js" type="module" defer></script>
+</body>
+</html>

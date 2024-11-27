@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Форма создания поста</title>
+
+    <link rel="stylesheet" href="/styles/reset.css">
+    <link rel="stylesheet" href="/styles/createPost.css">
+    <link rel="stylesheet" href="/styles/header.css">
+</head>
+<body>
+<div id="root">
+    <section>
+        <a href="/post">Перейти на страницу просмотра всех постов</a>
+        <form id="save-post">
+            <label>
+                <input placeholder="title" type="text" name="title" id="titlt">
+            </label>
+            <label>
+                <input placeholder="content" type="text" name="content" id="content">
+                <small id="file-error" style="display: none;">Превышен лимит файлов. Нельзя загрузить больше чем 3
+                    изображения.</small>
+            </label>
+            <input type="file" name="base64Image" id="base64Image" multiple>
+            <button type="submit" id="save-post-btn">Send</button>
+        </form>
+    </section>
+</div>
+
+<script src="/js/savePost.js" type="module" defer></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+* {
+    padding: 0;
+    margin: 0;
+    object-fit: cover;
+    box-sizing: content-box;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
