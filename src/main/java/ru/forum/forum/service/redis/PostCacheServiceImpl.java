@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.forum.forum.cache.PostCache;
-import ru.forum.forum.model.post.Post;
 import ru.forum.forum.repository.redis.PostCacheRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Spliterator;
 import java.util.stream.StreamSupport;
 
@@ -24,27 +22,27 @@ public class PostCacheServiceImpl implements PostCacheService {
   }
   
   @Override
-  public void deletePost(long id) {
+  public void deletePostById(long id) {
     this.postCacheRepository.deleteById(id);
   }
   
   @Override
-  public Optional<PostCache> getPostById(long id) {
-    return this.postCacheRepository.findById(id);
+  public PostCache getPostById(long id) {
+    return this.postCacheRepository.findById(id).orElse(null);
   }
   
   @Override
-  public Optional<PostCache> getPostByTitle(String title) {
+  public PostCache getPostByTitle(String title) {
     return this.postCacheRepository.findByTitle(title);
   }
   
   @Override
-  public Optional<List<Post>> getAllPostsByTitle(String title) {
+  public List<PostCache> getAllPostsByTitle(String title) {
     return this.postCacheRepository.findAllByTitle(title);
   }
   
   @Override
-  public Optional<PostCache> getPostByArticle(String article) {
+  public PostCache getPostByArticle(String article) {
     return this.postCacheRepository.findByArticle(article);
   }
   

@@ -2,14 +2,13 @@ package ru.forum.forum.service.post;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.forum.forum.cache.PostCache;
 import ru.forum.forum.model.post.Post;
 import ru.forum.forum.repository.PostRepository;
 import ru.forum.forum.service.image.ImageService;
+import ru.forum.forum.service.redis.PostCacheService;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +23,8 @@ public class PostServiceImpl implements PostService {
   
   @Override
   @Transactional
-  public Post savePost(Post post) {
-    return postRepository.save(post);
+  public void savePost(Post post) {
+    postRepository.save(post);
   }
   
   @Override

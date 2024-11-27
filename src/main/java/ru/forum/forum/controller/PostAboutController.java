@@ -25,50 +25,9 @@ import java.util.Optional;
 public class PostAboutController {
   private final ImageService imageService;
   private final PostService postService;
-  private final PostCacheService postCacheService;
   
   @GetMapping("/about/{article}")
   public ResponseEntity<ApiResponse<PostResponseDTO>> getAboutPostData(@PathVariable("article") String article) {
-    Optional<PostCache> postCache = findDataFromCache(article);
-    
-    if (postCache.isEmpty()) {
-      // !!!
-      PostCache cache = this.postCacheService.getPostByArticle(article)
-        .orElseThrow(() -> new IllegalArgumentException("Не удалось найти пост"));
-      PostResponseDTO responseDTO = convertToResponseDTO(cache);
-      
-      List<Image> imageList = this.imageService.findByOwnerId(cache.getId());
-      responseDTO.setImageList(imageList);
-      
-      return ResponseEntity.ok(new ApiResponse<>(true, "Успешно найден", responseDTO));
-    } else {
-      PostCache cache = postCache.get();
-      PostResponseDTO responseDTO = convertToResponseDTO(cache);
-      BeanUtils.copyProperties(postCache, responseDTO);
-      
-      List<Image> imageList = this.imageService.findByOwnerId(cache.getId());
-      responseDTO.setImageList(imageList);
-      
-      return ResponseEntity.ok(new ApiResponse<>(true, "Успешно найден", responseDTO));
-    }
-  }
-  
-  private PostResponseDTO convertToResponseDTO(PostCache cache) {
-    PostResponseDTO responseDTO = new PostResponseDTO();
-    BeanUtils.copyProperties(cache, responseDTO);
-    List<Image> imageList = this.imageService.findByOwnerId(responseDTO.getId());
-    responseDTO.setImageList(imageList);
-    return responseDTO;
-  }
-  
-  private Optional<PostCache> findDataFromCache(String article) {
-    Optional<PostCache> postCache = this.postCacheService.getPostByArticle(article);
-    if (postCache.isPresent()) {
-      PostCache cache = postCache.get();
-      log.info("Кэш найден: {}", cache.getArticle());
-      return Optional.of(cache);
-    }
-    log.info("Кэш не найден");
-    return Optional.empty();
+    return null;
   }
 }

@@ -3,6 +3,7 @@ package ru.forum.forum.model.post;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.beans.BeanUtils;
 import ru.forum.forum.model.image.Image;
 
 import java.util.ArrayList;
@@ -26,5 +27,11 @@ public class PostResponseDTO {
   
   public void addImage(Image image) {
     this.getImageList().add(image);
+  }
+  
+  public static PostResponseDTO convertObjectToResponse(Object object) {
+    PostResponseDTO responseDTO = new PostResponseDTO();
+    BeanUtils.copyProperties(object, responseDTO);
+    return responseDTO;
   }
 }

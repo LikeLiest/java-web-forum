@@ -30,15 +30,25 @@ public class PostController {
   
   @GetMapping("{id:[0-9]+}")
   public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(@PathVariable("id") long id) {
-    Post post = this.postService.getPostById(id)
-      .orElseThrow(() -> new IllegalArgumentException("Не удалось найти запрашиваемый ресурс"));
+    PostCache cache = this.postCacheService.getPostById(id);
     
-    if (post != null) {
-      PostResponseDTO responseDTO = new PostResponseDTO();
-      BeanUtils.copyProperties(post, responseDTO);
+    if (cache != null) {
+      log.info("Данные пришли из кэша");
+      PostResponseDTO responseDTO = PostResponseDTO.convertObjectToResponse(cache);
+      addImagesListToResponseDTOByID(responseDTO, responseDTO.getId());
       
-      List<Image> imageList = this.imageService.findByOwnerId(post.getId());
-      responseDTO.setImageList(imageList);
+      return ResponseEntity.ok(new ApiResponse<>(true, "Успешно найдено", responseDTO));
+    }
+    
+    Optional<Post> optionalPost = this.postService.getPostById(id);
+    if (optionalPost.isPresent()) {
+      Post post = optionalPost.get();
+      
+      PostCache cacheToSave = convertObjectToCache(post);
+      this.postCacheService.savePost(cacheToSave);
+      
+      PostResponseDTO responseDTO = PostResponseDTO.convertObjectToResponse(post);
+      addImagesListToResponseDTOByID(responseDTO, responseDTO.getId());
       
       return ResponseEntity.ok(new ApiResponse<>(true, "Успешно найдено", responseDTO));
     }
@@ -54,11 +64,11 @@ public class PostController {
   
   @GetMapping("{title:[^0-9].*}")
   public ResponseEntity<ApiResponse<List<PostResponseDTO>>> getPostById(@PathVariable("title") String title) {
-    Optional<List<Post>> optionalPostList = this.postService.getAllPostsByTitle(title);
+    Optional<List<Post>> postList = this.postService.getAllPostsByTitle(title);
     
-    if (optionalPostList.isPresent()) {
-      List<Post> postList = optionalPostList.get();
-      return findAllPosts(postList);
+    if (postList.isPresent()) {
+      List<Post> posts = postList.get();
+      return findAllPosts(posts);
     }
     
     return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Не удалось получить список постов", null));
@@ -108,6 +118,7 @@ public class PostController {
   @DeleteMapping("{id}")
   public ResponseEntity<String> deletePost(@PathVariable("id") long id) {
     this.postService.deletePost(id);
+    this.postCacheService.deletePostById(id);
     return ResponseEntity.ok("Пост с ID=%d успешно удален".formatted(id));
   }
   
@@ -139,8 +150,18 @@ public class PostController {
   }
   
   private PostResponseDTO convertEntityToResponse(Post post) {
-    PostResponseDTO responseDTO = new PostResponseDTO();
-    BeanUtils.copyProperties(post, responseDTO);
-    return responseDTO;
+    return PostResponseDTO.convertObjectToResponse(post);
   }
+  
+  private void addImagesListToResponseDTOByID(PostResponseDTO responseDTO, Long ownerId) {
+    List<Image> imageList = this.imageService.findByOwnerId(ownerId);
+    responseDTO.addListImages(imageList);
+  }
+  
+  private PostCache convertObjectToCache(Object entity) {
+    PostCache cache = new PostCache();
+    BeanUtils.copyProperties(entity, cache);
+    return cache;
+  }
+  
 }

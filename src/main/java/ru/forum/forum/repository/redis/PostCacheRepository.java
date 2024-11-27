@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface PostCacheRepository extends CrudRepository<PostCache, Long> {
-  Optional<PostCache> findByTitle(String title);
+  PostCache findByTitle(String title);
   
-  Optional<PostCache> findByArticle(String article);
+  PostCache findByArticle(String article);
   
-  Optional<List<Post>> findAllByTitle(String title);
+  List<PostCache> findAllByTitle(String title);
 }

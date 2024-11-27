@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
   
@@ -16,6 +18,11 @@ public class GlobalExceptionHandler {
   
   @ExceptionHandler(ValidationException.class)
   public ResponseEntity<String> handleValidationException(ValidationException e) {
+    return ResponseEntity.badRequest().body(e.getMessage());
+  }
+  
+  @ExceptionHandler(NoSuchElementException.class)
+  public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
     return ResponseEntity.badRequest().body(e.getMessage());
   }
 }
