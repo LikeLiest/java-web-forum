@@ -4,8 +4,6 @@ async function renderAllPosts() {
     const posts = await getAllPosts();
     const postContainer = document.querySelector('#post-container');
 
-    console.log(posts)
-
     posts.forEach(post => {
         const ul = document.createElement('ul');
         const li = document.createElement('li')
@@ -16,7 +14,7 @@ async function renderAllPosts() {
     });
 }
 
-export default function renderPost(post, container, htmlElement) {
+export function renderPost(post, container, htmlElement) {
     Object.entries(post).forEach(([key, value]) => {
         if (key === 'commentList' && Array.isArray(value)) {
             renderPostComments(container, value);
@@ -30,6 +28,28 @@ export default function renderPost(post, container, htmlElement) {
     });
     renderButtonForDeletePost(container, post.id)
     renderAboutPostLink(container, post.article)
+}
+
+export function renderPostObject(post, container, htmlElement) {
+    const arraysFromObject = post.data
+
+    arraysFromObject.forEach(object => {
+        Object.entries(object).forEach(([key, value]) => {
+            if (key === 'commentList' && Array.isArray(value)) {
+                renderPostComments(container, value);
+
+            } else if (key === 'imageList' && Array.isArray(value)) {
+                renderPreviewImage(container, value)
+
+            } else {
+                renderDefaultPostProps(container, key, value, htmlElement)
+            }
+        });
+        renderButtonForDeletePost(container, post.id)
+        renderAboutPostLink(container, post.article)
+    })
+
+    console.log(arraysFromObject)
 }
 
 function renderAboutPostLink(container, postArticle) {
@@ -46,7 +66,6 @@ function renderDefaultPostProps(container, postKey, postValue, htmlElement) {
             dateOfCreate[0] = dateOfCreate[0].slice(2);
 
             const formattedDateOfCreate = dateOfCreate.join(' ')
-            console.log(formattedDateOfCreate);
 
             const span = document.createElement('span')
             span.textContent = formattedDateOfCreate

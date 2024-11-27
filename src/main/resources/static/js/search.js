@@ -1,4 +1,4 @@
-import renderPost from "./renderAllPosts.js";
+import {renderPost, renderPostObject} from "./renderAllPosts.js";
 
 const searchResultContainer = document.querySelector('#render-search-result')
 
@@ -26,13 +26,15 @@ function renderSearchResult(inputValue) {
 
             if (/^\d+$/.test(searchPost)) {
                 post = await fetchToSearchPostByIdentifier(Number(searchPost))
+                console.log(post)
             } else {
                 post = await fetchToSearchPostByIdentifier(searchPost)
+                console.log(post)
             }
             const p = document.createElement('p')
 
             if (post !== undefined)
-                renderPost(post, searchResultContainer, p)
+                renderPostObject(post, searchResultContainer, p)
 
         }, 500
     )

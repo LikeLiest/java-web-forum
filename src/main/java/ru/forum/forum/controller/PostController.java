@@ -138,6 +138,9 @@ public class PostController {
       .map(Post::getId)
       .toList();
     
+    // Нужно получить только само изображение(base64), а не объект изображения
+    // Клиент неправильно из-за этого рендерит страницу
+    
     List<Image> imageList = this.imageService.findByOwnerIdIn(postIds);
     Map<Long, List<Image>> imagesByPostId = imageList.stream()
       .collect(Collectors.groupingBy(Image::getId));
