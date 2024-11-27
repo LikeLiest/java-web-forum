@@ -39,8 +39,8 @@ export function renderPostObject(post, container, htmlElement) {
                 renderPostComments(container, value);
 
             } else if (key === 'imageList' && Array.isArray(value)) {
-                renderPreviewImage(container, value)
-
+                const base64 = value[0].base64
+                renderPreviewImageForTitle(container, base64)
             } else {
                 renderDefaultPostProps(container, key, value, htmlElement)
             }
@@ -102,6 +102,17 @@ function renderPreviewImage(container, postImages) {
     const img = document.createElement('img');
     img.src = `data:image/jpg;base64,${previewImage.base64} ` || '';
     img.alt = previewImage.alt || 'Image';
+    div.appendChild(img)
+    li.appendChild(div)
+    container.appendChild(li);
+}
+
+function renderPreviewImageForTitle(container, base64) {
+    const li = document.createElement('li')
+    const div = document.createElement('div')
+    const img = document.createElement('img');
+    img.src = `data:image/jpg;base64,${base64}` || '';
+    img.alt = 'Image';
     div.appendChild(img)
     li.appendChild(div)
     container.appendChild(li);

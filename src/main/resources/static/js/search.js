@@ -2,8 +2,8 @@ import {renderPost, renderPostObject} from "./renderAllPosts.js";
 
 const searchResultContainer = document.querySelector('#render-search-result')
 
-const searchPostByID = document.querySelector('#search-post')
-const searchPostByTitle = document.querySelector('#search-post-by-title')
+export const searchPostByID = document.querySelector('#search-post')
+export const searchPostByTitle = document.querySelector('#search-post-by-title')
 
 let timeout;
 
@@ -21,21 +21,27 @@ function renderSearchResult(inputValue) {
 
     const searchPost = inputValue.trim()
 
-    timeout = setTimeout(async () => {
-            let post
+    if (searchPost === '')
+        return
 
-            if (/^\d+$/.test(searchPost)) {
-                post = await fetchToSearchPostByIdentifier(Number(searchPost))
-                console.log(post)
-            } else {
-                post = await fetchToSearchPostByIdentifier(searchPost)
-                console.log(post)
-            }
+    timeout = setTimeout(async () => {
             const p = document.createElement('p')
 
-            if (post !== undefined)
-                renderPostObject(post, searchResultContainer, p)
+            if (/^\d+$/.test(searchPost)) {
+                const post = await fetchToSearchPostByIdentifier(Number(searchPost))
 
+                if (post !== undefined)
+                    renderPost(post, searchResultContainer, p)
+
+                console.log(post)
+            } else {
+                const post = await fetchToSearchPostByIdentifier(searchPost)
+
+                if (post !== undefined)
+                    renderPostObject(post, searchResultContainer, p)
+
+                console.log(post)
+            }
         }, 500
     )
 }

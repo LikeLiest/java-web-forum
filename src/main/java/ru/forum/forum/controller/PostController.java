@@ -143,15 +143,17 @@ public class PostController {
     
     List<Image> imageList = this.imageService.findByOwnerIdIn(postIds);
     Map<Long, List<Image>> imagesByPostId = imageList.stream()
-      .collect(Collectors.groupingBy(Image::getId));
+      .collect(Collectors.groupingBy(Image::getOwnerId));
     
     List<PostResponseDTO> responseDTOList = postCaches.stream()
       .map(post -> {
         var dto = new PostResponseDTO();
         BeanUtils.copyProperties(post, dto);
-        dto.addListImages(imagesByPostId.getOrDefault(post.getId(), List.of()));
+        dto.addListImages(imagesByPostId.getOrDefault(post.getId(), imageList));
+        log.info("{}", dto);
         return dto;
-      }).toList();
+      })
+      .toList();
     
     return ResponseEntity.ok(new ApiResponse<>(true, "Успешно найдено", responseDTOList));
   }
