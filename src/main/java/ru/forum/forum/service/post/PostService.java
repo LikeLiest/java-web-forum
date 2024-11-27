@@ -13,6 +13,7 @@ public interface PostService {
   
   Optional<PostCache> getPostById(long id);
   Optional<PostCache> getPostByTitle(String title);
+  Optional<List<Post>> getAllPostsByTitle(String title);
   
   Post fullUpdatePost(Post post);
   

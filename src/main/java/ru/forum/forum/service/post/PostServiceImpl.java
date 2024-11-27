@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.forum.forum.cache.PostCache;
 import ru.forum.forum.model.post.Post;
-import ru.forum.forum.repository.ImageRepository;
 import ru.forum.forum.repository.PostRepository;
+import ru.forum.forum.service.image.ImageService;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +20,6 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
-  private final ImageRepository imageRepository;
   private final RedisTemplate<String, PostCache> redisTemplate;
   
   @Override
@@ -30,14 +29,12 @@ public class PostServiceImpl implements PostService {
   }
   
   @Override
-  @Transactional
   public void deletePost(long id) {
     PostCache postCache = redisTemplate.opsForValue().get("post_" + id);
     
     if (postCache != null)
       redisTemplate.delete("post_" + id);
     
-    this.imageRepository.deleteAllByOwnerId(id);
     postRepository.deleteById(id);
   }
   
@@ -46,6 +43,11 @@ public class PostServiceImpl implements PostService {
   public List<Post> getAll() {
     Iterable<Post> posts = this.postRepository.findAll();
     return StreamSupport.stream(posts.spliterator(), false).toList();
+  }
+  
+  @Override
+  public Optional<List<Post>> getAllPostsByTitle(String title) {
+    return this.postRepository.findAllByTitle(title);
   }
   
   @Override
@@ -74,8 +76,13 @@ public class PostServiceImpl implements PostService {
   @Override
   public Optional<PostCache> getPostByTitle(String title) {
     PostCache cache = redisTemplate.opsForValue().get("post_" + title);
-    if (cache != null)
+    if (cache != null) {
+      PostCache cacheById = redisTemplate.opsForValue().get("post_" + cache.getId());
+      if(cacheById == cache)
+        return Optional.of(cacheById);
+      
       return Optional.of(cache);
+    }
     
     var post = this.postRepository.findByTitle(title);
     

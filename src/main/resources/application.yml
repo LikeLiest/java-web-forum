@@ -20,3 +20,5 @@ spring:
       password: root
       database: 0
       timeout: 2000
+  main:
+    allow-circular-references: true
