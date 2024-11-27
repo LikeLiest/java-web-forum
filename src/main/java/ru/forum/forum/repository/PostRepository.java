@@ -12,6 +12,5 @@ import java.util.Optional;
 public interface PostRepository extends CrudRepository<Post, Long> {
   Optional<Post> findByTitle(String title);
   Optional<List<Post>> findAllByTitle(String title);
-  
-  PostCache findByArticle(String article);
+  Optional<Post> findByArticle(String article);
 }

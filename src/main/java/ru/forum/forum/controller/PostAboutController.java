@@ -14,6 +14,7 @@ import ru.forum.forum.model.image.Image;
 import ru.forum.forum.model.post.PostResponseDTO;
 import ru.forum.forum.service.image.ImageService;
 import ru.forum.forum.service.post.PostService;
+import ru.forum.forum.service.redis.PostCacheService;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ import java.util.Optional;
 public class PostAboutController {
   private final ImageService imageService;
   private final PostService postService;
-  private final RedisTemplate<String, PostCache> redisTemplate;
+  private final PostCacheService postCacheService;
   
   @GetMapping("/about/{article}")
   public ResponseEntity<ApiResponse<PostResponseDTO>> getAboutPostData(@PathVariable("article") String article) {
@@ -32,7 +33,7 @@ public class PostAboutController {
     
     if (postCache.isEmpty()) {
       // !!!
-      PostCache cache = this.postService.getPostByArticle(article)
+      PostCache cache = this.postCacheService.getPostByArticle(article)
         .orElseThrow(() -> new IllegalArgumentException("Не удалось найти пост"));
       PostResponseDTO responseDTO = convertToResponseDTO(cache);
       
@@ -61,10 +62,11 @@ public class PostAboutController {
   }
   
   private Optional<PostCache> findDataFromCache(String article) {
-    PostCache postCache = this.redisTemplate.opsForValue().get("article_" + article);
-    if (postCache != null) {
-      log.info("Кэш найден: {}", postCache.getArticle());
-      return Optional.of(postCache);
+    Optional<PostCache> postCache = this.postCacheService.getPostByArticle(article);
+    if (postCache.isPresent()) {
+      PostCache cache = postCache.get();
+      log.info("Кэш найден: {}", cache.getArticle());
+      return Optional.of(cache);
     }
     log.info("Кэш не найден");
     return Optional.empty();

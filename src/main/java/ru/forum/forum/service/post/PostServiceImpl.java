@@ -21,7 +21,6 @@ import java.util.stream.StreamSupport;
 public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final ImageService imageService;
-  private final RedisTemplate<String, PostCache> redisTemplate;
   
   @Override
   @Transactional
@@ -32,11 +31,6 @@ public class PostServiceImpl implements PostService {
   @Override
   @Transactional
   public void deletePost(long id) {
-    PostCache postCache = redisTemplate.opsForValue().get("post_" + id);
-    
-    if (postCache != null)
-      redisTemplate.delete("post_" + id);
-    
     this.imageService.deleteAllByOwnerId(id);
     this.postRepository.deleteById(id);
   }
@@ -54,60 +48,18 @@ public class PostServiceImpl implements PostService {
   }
   
   @Override
-  public Optional<PostCache> getPostByArticle(String article) {
-    PostCache postFromRedis = redisTemplate.opsForValue().get("article_" + article);
-    if (postFromRedis != null) {
-      PostCache postCache = this.postRepository.findByArticle(article);
-      redisTemplate.opsForValue().set("article_" + article, postCache);
-      return Optional.of(postCache);
-    }
-    PostCache cache = this.postRepository.findByArticle(article);
-    return Optional.of(cache);
+  public Optional<Post> getPostByArticle(String article) {
+    return this.postRepository.findByArticle(article);
   }
   
   @Override
-  public Optional<PostCache> getPostById(long id) {
-    PostCache postCache = redisTemplate.opsForValue().get("post_" + id);
-    if (postCache != null)
-      return Optional.of(postCache);
-    
-    var post = this.postRepository.findById(id);
-    
-    if (post.isPresent()) {
-      PostCache postToSave = convertToCache(post.get());
-      redisTemplate.opsForValue().set("post_" + id, postToSave);
-      return Optional.of(postToSave);
-    }
-    
-    return Optional.empty();
-  }
-  
-  private PostCache convertToCache(Post post) {
-    PostCache postCache = new PostCache();
-    BeanUtils.copyProperties(post, postCache);
-    return postCache;
+  public Optional<Post> getPostById(long id) {
+    return this.postRepository.findById(id);
   }
   
   @Override
-  public Optional<PostCache> getPostByTitle(String title) {
-    PostCache cache = redisTemplate.opsForValue().get("post_" + title);
-    if (cache != null) {
-      PostCache cacheById = redisTemplate.opsForValue().get("post_" + cache.getId());
-      if (cacheById == cache)
-        return Optional.of(cacheById);
-      
-      return Optional.of(cache);
-    }
-    
-    var post = this.postRepository.findByTitle(title);
-    
-    if (post.isPresent()) {
-      PostCache postToSave = convertToCache(post.get());
-      redisTemplate.opsForValue().set("post_" + title, postToSave);
-      return Optional.of(postToSave);
-    }
-    
-    return Optional.empty();
+  public Optional<Post> getPostByTitle(String title) {
+    return this.postRepository.findByTitle(title);
   }
   
   @Override

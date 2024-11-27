@@ -3,7 +3,6 @@ package ru.forum.forum.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.forum.forum.cache.PostCache;
@@ -14,6 +13,7 @@ import ru.forum.forum.model.post.PostRequestDTO;
 import ru.forum.forum.model.post.PostResponseDTO;
 import ru.forum.forum.service.image.ImageService;
 import ru.forum.forum.service.post.PostService;
+import ru.forum.forum.service.redis.PostCacheService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,29 +26,30 @@ import java.util.stream.StreamSupport;
 public class PostController {
   private final PostService postService;
   private final ImageService imageService;
-  private final RedisTemplate<String, PostCache> redisTemplate;
+  private final PostCacheService postCacheService;
   
   @GetMapping("{id:[0-9]+}")
-  public ResponseEntity<?> getPostById(@PathVariable("id") long id) {
-    var post = this.postService.getPostById(id);
-    if (post.isPresent())
-      return findPost(post);
+  public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(@PathVariable("id") long id) {
+    Post post = this.postService.getPostById(id)
+      .orElseThrow(() -> new IllegalArgumentException("Не удалось найти запрашиваемый ресурс"));
     
-    return ResponseEntity.badRequest().body("Не удалось найти запрашиваемый пост");
+    if (post != null) {
+      PostResponseDTO responseDTO = new PostResponseDTO();
+      BeanUtils.copyProperties(post, responseDTO);
+      
+      List<Image> imageList = this.imageService.findByOwnerId(post.getId());
+      responseDTO.setImageList(imageList);
+      
+      return ResponseEntity.ok(new ApiResponse<>(true, "Успешно найдено", responseDTO));
+    }
+    
+    return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Ошибка. Не удалось найти запрашиваемые данные", null));
   }
   
   @GetMapping("/cache")
-  public ResponseEntity<?> getPostFromCache() {
-    Set<String> keys = redisTemplate.keys("post_*");
-    
-    if (keys == null || keys.isEmpty())
-      return ResponseEntity.ok("Нет закэшированных данных ");
-    
-    List<PostCache> postCaches = keys.stream()
-      .map(key -> redisTemplate.opsForValue().get(key))
-      .toList();
-    
-    return ResponseEntity.ok(postCaches);
+  public ResponseEntity<List<PostCache>> getPostFromCache() {
+    List<PostCache> postCacheList = this.postCacheService.getAll();
+    return ResponseEntity.ok(postCacheList);
   }
   
   @GetMapping("{title:[^0-9].*}")
@@ -110,21 +111,6 @@ public class PostController {
     return ResponseEntity.ok("Пост с ID=%d успешно удален".formatted(id));
   }
   
-  private ResponseEntity<?> findPost(Optional<PostCache> postCache) {
-    if (postCache.isPresent()) {
-      PostCache post = postCache.get();
-      var imageList = this.imageService.findByOwnerId(post.getId());
-      var responseDto = new PostResponseDTO();
-      
-      BeanUtils.copyProperties(post, responseDto);
-      responseDto.addListImages(imageList);
-      
-      return ResponseEntity.ok(responseDto);
-    }
-    
-    return ResponseEntity.badRequest().body("Не удалось найти такой пост");
-  }
-  
   private ResponseEntity<ApiResponse<List<PostResponseDTO>>> findAllPosts(List<Post> posts) {
     if (posts.isEmpty()) {
       return ResponseEntity.badRequest()
@@ -141,7 +127,7 @@ public class PostController {
     
     List<PostResponseDTO> responseDTOList = posts.stream()
       .map(post -> {
-        var dto = new PostResponseDTO();
+        PostResponseDTO dto = new PostResponseDTO();
         BeanUtils.copyProperties(post, dto);
         dto.addListImages(imagesByPostId.getOrDefault(post.getId(), imageList));
         log.info("{}", dto);
