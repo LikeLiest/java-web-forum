@@ -1,24 +1,32 @@
 import {setCookie} from "./cookie.js";
 
-export function renderPost(post, container, htmlElement) {
+export function renderPost(post, container, htmlElement, renderPreviewImageOnly) {
     if (post.data !== undefined) {
         const postData = post.data
-        renderPostData(postData, container, htmlElement)
+        renderPostData(postData, container, htmlElement, renderPreviewImageOnly)
     }
 
-    console.log(post)
-    renderPostData(post, container, htmlElement)
+    renderPostData(post, container, htmlElement, renderPreviewImageOnly)
     renderButtonForDeletePost(container, post.id)
-    renderAboutPostLink(post, container)
+
+    if (!renderPreviewImageOnly)
+        renderAboutPostLink(post, container)
 }
 
-export function renderPostData(post, container, htmlElement) {
+export function renderPostData(post, container, htmlElement, renderPreviewImageOnly) {
     Object.entries(post).forEach(([key, value]) => {
         if (key === 'commentList' && Array.isArray(value)) {
             renderPostComments(container, value);
 
         } else if (key === 'imageList' && Array.isArray(value)) {
-            renderPreviewImage(container, value)
+
+            if (renderPreviewImageOnly) {
+                const imagesList = value.map(obj => obj.base64)
+                renderAllImages(container, imagesList)
+            } else {
+                console.log(renderPreviewImageOnly)
+                renderPreviewImage(container, value)
+            }
 
         } else {
             renderDefaultPostProps(container, key, value, htmlElement)
@@ -26,7 +34,7 @@ export function renderPostData(post, container, htmlElement) {
     });
 }
 
-export function renderPostObject(post, container, htmlElement) {
+export function renderPostObject(post, container, htmlElement, renderPreviewImageOnly) {
     const arraysFromObject = post.data
 
     arraysFromObject.forEach(object => {
@@ -35,17 +43,22 @@ export function renderPostObject(post, container, htmlElement) {
                 renderPostComments(container, value);
 
             } else if (key === 'imageList' && Array.isArray(value)) {
-                const base64 = value[0].base64
-                renderPreviewImageForTitle(container, base64)
+
+                if (renderPreviewImageOnly) {
+                    renderAllImages(container, value.base64)
+                } else {
+                    const base64 = value[0].base64
+                    renderPreviewImageForTitle(container, base64)
+                }
+
             } else {
                 renderDefaultPostProps(container, key, value, htmlElement)
             }
         });
         renderButtonForDeletePost(container, post.id)
-        renderAboutPostLink(container, "test")
+        renderAboutPostLink(post, container)
     })
 
-    console.log(arraysFromObject)
 }
 
 export function renderAboutPostLink(post, container) {
@@ -122,11 +135,11 @@ export function renderPreviewImageForTitle(container, base64) {
 export function renderAllImages(container, postImages) {
     const ol = document.createElement('ol')
 
-    postImages.forEach(image => {
+    postImages.forEach(base64 => {
         const li = document.createElement('li')
         const img = document.createElement('img');
-        img.src = `data:image/jpg;base64,${image.base64} ` || '';
-        img.alt = image.alt || 'Image';
+        img.src = `data:image/jpg;base64,${base64} ` || '';
+        img.alt = 'Image';
         li.appendChild(img)
         ol.appendChild(li)
         container.appendChild(ol);

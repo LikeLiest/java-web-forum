@@ -31,14 +31,14 @@ function renderSearchResult(inputValue) {
                 const post = await fetchToSearchPostByIdentifier(Number(searchPost))
 
                 if (post !== undefined)
-                    renderPost(post, searchResultContainer, p)
+                    renderPost(post, searchResultContainer, p, false)
 
                 console.log(post)
             } else {
                 const post = await fetchToSearchPostByIdentifier(searchPost)
 
                 if (post !== undefined)
-                    renderPostObject(post, searchResultContainer, p)
+                    renderPostObject(post, searchResultContainer, p, false)
 
                 console.log(post)
             }
