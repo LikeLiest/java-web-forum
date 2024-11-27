@@ -5,11 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("post")
 public class SSRController {
-  @GetMapping("")
+  @GetMapping("dashboard")
   public String postController() {
-    return "post";
+    return "dashboard";
   }
   
   @GetMapping("create")
@@ -17,7 +16,7 @@ public class SSRController {
     return "createPost";
   }
   
-  @GetMapping("about")
+  @GetMapping("info")
   public String postInfo() {
     return "postInfo";
   }

@@ -38,7 +38,7 @@ savePostBtn.onclick = async event => {
 };
 
 async function fetchToCreatePost(post) {
-    const response = await fetch('/posts/', {
+    const response = await fetch('http://localhost:8080/posts/', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(post)

@@ -1,4 +1,4 @@
-import {renderPost, renderPostObject} from "./renderAllPosts.js";
+import {renderPost, renderPostObject} from "./render.js";
 
 const searchResultContainer = document.querySelector('#render-search-result')
 
@@ -52,7 +52,7 @@ const renderError = error => {
 }
 
 const fetchToSearchPostByIdentifier = async identifier => {
-    const response = await fetch(`posts/${identifier}`)
+    const response = await fetch(`http://localhost:8080/posts/${identifier}`)
 
     if (!response.ok) {
         renderError(`Пост не найден`)

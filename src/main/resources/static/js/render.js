@@ -1,20 +1,18 @@
-await renderAllPosts()
-
-async function renderAllPosts() {
-    const posts = await getAllPosts();
-    const postContainer = document.querySelector('#post-container');
-
-    posts.forEach(post => {
-        const ul = document.createElement('ul');
-        const li = document.createElement('li')
-
-        renderPost(post, ul, li)
-
-        postContainer.appendChild(ul);
-    });
-}
+import {setCookie} from "./cookie.js";
 
 export function renderPost(post, container, htmlElement) {
+    if (post.data !== undefined) {
+        const postData = post.data
+        renderPostData(postData, container, htmlElement)
+    }
+
+    console.log(post)
+    renderPostData(post, container, htmlElement)
+    renderButtonForDeletePost(container, post.id)
+    renderAboutPostLink(post, container)
+}
+
+export function renderPostData(post, container, htmlElement) {
     Object.entries(post).forEach(([key, value]) => {
         if (key === 'commentList' && Array.isArray(value)) {
             renderPostComments(container, value);
@@ -26,8 +24,6 @@ export function renderPost(post, container, htmlElement) {
             renderDefaultPostProps(container, key, value, htmlElement)
         }
     });
-    renderButtonForDeletePost(container, post.id)
-    renderAboutPostLink(container, post.article)
 }
 
 export function renderPostObject(post, container, htmlElement) {
@@ -46,20 +42,26 @@ export function renderPostObject(post, container, htmlElement) {
             }
         });
         renderButtonForDeletePost(container, post.id)
-        renderAboutPostLink(container, post.article)
+        renderAboutPostLink(container, "test")
     })
 
     console.log(arraysFromObject)
 }
 
-function renderAboutPostLink(container, postArticle) {
+export function renderAboutPostLink(post, container) {
     const a = document.createElement('a');
-    a.href = `/about/${postArticle}`;
-    a.textContent = 'Посмореть подробней';
+    a.href = `http://localhost:8080/info`;
+    a.textContent = 'Посмотреть подробней';
+
+    a.onclick = () => {
+        const postArticle = post.article
+        setCookie('article', postArticle);
+    }
+
     container.appendChild(a);
 }
 
-function renderDefaultPostProps(container, postKey, postValue, htmlElement) {
+export function renderDefaultPostProps(container, postKey, postValue, htmlElement) {
     if (postKey !== 'id' && postKey !== "article") {
         if (postKey === 'dateOfCreate') {
             const dateOfCreate = postValue.split('-');
@@ -81,7 +83,7 @@ function renderDefaultPostProps(container, postKey, postValue, htmlElement) {
     container.appendChild(htmlElement);
 }
 
-function renderButtonForDeletePost(htmlElement, id) {
+export function renderButtonForDeletePost(htmlElement, id) {
     const button = document.createElement('button');
     button.type = 'submit';
     button.textContent = 'Удалить пост';
@@ -89,13 +91,13 @@ function renderButtonForDeletePost(htmlElement, id) {
     htmlElement.appendChild(button);
 }
 
-async function deleteThisPost(id) {
-    await fetch(`posts/${id}`, {method: 'DELETE'});
+export async function deleteThisPost(id) {
+    await fetch(`http://localhost:8080/posts/${id}`, {method: 'DELETE'});
+    document.cookie = `article=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
     window.location.reload();
 }
 
-function renderPreviewImage(container, postImages) {
-    const li = document.createElement('li')
+export function renderPreviewImage(container, postImages) {
     const previewImage = postImages[0];
 
     const div = document.createElement('div')
@@ -103,11 +105,10 @@ function renderPreviewImage(container, postImages) {
     img.src = `data:image/jpg;base64,${previewImage.base64} ` || '';
     img.alt = previewImage.alt || 'Image';
     div.appendChild(img)
-    li.appendChild(div)
-    container.appendChild(li);
+    container.appendChild(div);
 }
 
-function renderPreviewImageForTitle(container, base64) {
+export function renderPreviewImageForTitle(container, base64) {
     const li = document.createElement('li')
     const div = document.createElement('div')
     const img = document.createElement('img');
@@ -118,7 +119,7 @@ function renderPreviewImageForTitle(container, base64) {
     container.appendChild(li);
 }
 
-function renderAllImages(container, postImages) {
+export function renderAllImages(container, postImages) {
     const ol = document.createElement('ol')
 
     postImages.forEach(image => {
@@ -132,7 +133,7 @@ function renderAllImages(container, postImages) {
     });
 }
 
-function renderPostComments(container, postComment) {
+export function renderPostComments(container, postComment) {
     const commentsUl = document.createElement('ul');
     postComment.forEach(comment => {
         const commentLi = document.createElement('li');
@@ -145,10 +146,3 @@ function renderPostComments(container, postComment) {
     container.appendChild(commentsTitle);
 }
 
-async function getAllPosts() {
-    const response = await fetch('posts/all');
-    return await response.json()
-}
-
-// TODO -> Посмотреть на такую логику:
-// TODO -> Рендерить только первое изображение в большом формате, а все остальные изображения(если присутствуют) добавлять как маленькие изображения

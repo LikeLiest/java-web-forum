@@ -1,82 +1,127 @@
-img {
-    width: 200px;
-    height: 200px;
-    border-radius: 16px;
-    margin: 10px auto;
-}
-
 #post-container {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 20px;
+}
+
+#post-container ul {
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#post-container ul li {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+#post-container ul li span {
+    font-size: 14px;
+    color: #333;
+}
+
+#post-container ul img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 5px;
+}
+
+#post-container ul button {
+    padding: 5px 10px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #e74c3c;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#post-container ul button:hover {
+    background-color: #c0392b;
+}
+
+#post-container ul a {
+    text-decoration: none;
+    font-size: 14px;
+    color: #3498db;
+}
+
+#post-container ul a:hover {
+    text-decoration: underline;
+}
+
+
+#render-search-result {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#render-search-result {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+#render-search-result div img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 5px;
+}
+
+#render-search-result p {
+    margin: 0;
+    display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin: 20px auto;
 }
 
-#post-container > ul {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    width: 50%;
-    margin: 10px auto;
-    box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1),
-    -1px -1px 2px rgba(0, 0, 0, 0.1);
-    padding: 8px 16px;
-    border-radius: 16px;
-    transition: .2s ease-in;
+#render-search-result p span {
+    font-size: 14px;
+    color: #333;
+    background-color: #eef;
+    padding: 2px 5px;
+    border-radius: 3px;
 }
 
-#post-container > ul:hover {
-    cursor: pointer;
-    scale: 1.01;
-    box-shadow: 2px 2px 2px 3px rgba(0, 0, 0, 0.1),
-    -2px -2px 3px rgba(0, 0, 0, 0.1);
-}
-
-#post-container > ul > li:nth-child(1) {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    width: max-content;
-}
-
-#post-container > ul > li:nth-child(2) > div {
-    width: max-content;
-    height: max-content;
-}
-
-#post-container > ul > button {
+#render-search-result button {
+    align-self: start;
+    padding: 5px 10px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #e74c3c;
     border: none;
-    border-radius: 24px;
-    font-size: clamp(14px, 1vw, 1.4rem);
-    font-weight: bold;
-    transition: .15s ease-in;
-    background-color: darkblue;
-    color: white;
-    padding: 6px 12px;
-    width: 300px;
-    margin: auto;
-}
-
-#post-container > ul > button:hover {
-    background-color: red;
+    border-radius: 3px;
     cursor: pointer;
-    color: white;
 }
 
-#post-container > ul > button:active {
-    scale: 0.98;
+#render-search-result button:hover {
+    background-color: #c0392b;
 }
 
-#post-container > ul > a {
-    font-size: clamp(12px, 0.8vw, 0.9rem);
-    font-weight: 500;
+#render-search-result a {
+    align-self: start;
+    text-decoration: none;
+    font-size: 14px;
+    color: #3498db;
 }
 
-#post-container > ul > a:hover {
+#render-search-result a:hover {
     text-decoration: underline;
 }
