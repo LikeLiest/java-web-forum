@@ -54,7 +54,7 @@ export function renderPostObject(post, container, htmlElement) {
 
 function renderAboutPostLink(container, postArticle) {
     const a = document.createElement('a');
-    a.href = `/aboutPost/${postArticle}`;
+    a.href = `/about/${postArticle}`;
     a.textContent = 'Посмореть подробней';
     container.appendChild(a);
 }

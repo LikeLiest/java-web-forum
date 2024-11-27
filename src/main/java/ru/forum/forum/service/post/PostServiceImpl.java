@@ -20,6 +20,7 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
+  private final ImageService imageService;
   private final RedisTemplate<String, PostCache> redisTemplate;
   
   @Override
@@ -29,13 +30,15 @@ public class PostServiceImpl implements PostService {
   }
   
   @Override
+  @Transactional
   public void deletePost(long id) {
     PostCache postCache = redisTemplate.opsForValue().get("post_" + id);
     
     if (postCache != null)
       redisTemplate.delete("post_" + id);
     
-    postRepository.deleteById(id);
+    this.imageService.deleteAllByOwnerId(id);
+    this.postRepository.deleteById(id);
   }
   
   // TODO
@@ -48,6 +51,18 @@ public class PostServiceImpl implements PostService {
   @Override
   public Optional<List<Post>> getAllPostsByTitle(String title) {
     return this.postRepository.findAllByTitle(title);
+  }
+  
+  @Override
+  public Optional<PostCache> getPostByArticle(String article) {
+    PostCache postFromRedis = redisTemplate.opsForValue().get("article_" + article);
+    if (postFromRedis != null) {
+      PostCache postCache = this.postRepository.findByArticle(article);
+      redisTemplate.opsForValue().set("article_" + article, postCache);
+      return Optional.of(postCache);
+    }
+    PostCache cache = this.postRepository.findByArticle(article);
+    return Optional.of(cache);
   }
   
   @Override
@@ -78,7 +93,7 @@ public class PostServiceImpl implements PostService {
     PostCache cache = redisTemplate.opsForValue().get("post_" + title);
     if (cache != null) {
       PostCache cacheById = redisTemplate.opsForValue().get("post_" + cache.getId());
-      if(cacheById == cache)
+      if (cacheById == cache)
         return Optional.of(cacheById);
       
       return Optional.of(cache);

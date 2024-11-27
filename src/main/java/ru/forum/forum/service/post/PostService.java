@@ -12,12 +12,17 @@ public interface PostService {
   void deletePost(long id);
   
   Optional<PostCache> getPostById(long id);
+  
   Optional<PostCache> getPostByTitle(String title);
+  
   Optional<List<Post>> getAllPostsByTitle(String title);
+  
+  Optional<PostCache> getPostByArticle(String article);
   
   Post fullUpdatePost(Post post);
   
   Post patchUpdatePost(String... values);
   
   List<Post> getAll();
+  
 }

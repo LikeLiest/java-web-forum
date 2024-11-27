@@ -16,4 +16,9 @@ public class SSRController {
   public String createPost() {
     return "createPost";
   }
+  
+  @GetMapping("about")
+  public String postInfo() {
+    return "postInfo";
+  }
 }

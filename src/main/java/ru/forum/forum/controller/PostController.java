@@ -31,9 +31,8 @@ public class PostController {
   @GetMapping("{id:[0-9]+}")
   public ResponseEntity<?> getPostById(@PathVariable("id") long id) {
     var post = this.postService.getPostById(id);
-    if (post.isPresent()) {
+    if (post.isPresent())
       return findPost(post);
-    }
     
     return ResponseEntity.badRequest().body("Не удалось найти запрашиваемый пост");
   }
@@ -111,41 +110,36 @@ public class PostController {
     return ResponseEntity.ok("Пост с ID=%d успешно удален".formatted(id));
   }
   
-  private ResponseEntity<?> findPost(Optional<PostCache> findPost) {
-    if (findPost.isPresent()) {
-      PostCache post = findPost.get();
+  private ResponseEntity<?> findPost(Optional<PostCache> postCache) {
+    if (postCache.isPresent()) {
+      PostCache post = postCache.get();
       var imageList = this.imageService.findByOwnerId(post.getId());
-      
       var responseDto = new PostResponseDTO();
       
       BeanUtils.copyProperties(post, responseDto);
       responseDto.addListImages(imageList);
       
-      log.info("{}", responseDto);
       return ResponseEntity.ok(responseDto);
     }
     
     return ResponseEntity.badRequest().body("Не удалось найти такой пост");
   }
   
-  private ResponseEntity<ApiResponse<List<PostResponseDTO>>> findAllPosts(List<Post> postCaches) {
-    if (postCaches.isEmpty()) {
+  private ResponseEntity<ApiResponse<List<PostResponseDTO>>> findAllPosts(List<Post> posts) {
+    if (posts.isEmpty()) {
       return ResponseEntity.badRequest()
         .body(new ApiResponse<>(false, "Список постов пуст", null));
     }
     
-    List<Long> postIds = postCaches.stream()
+    List<Long> postIds = posts.stream()
       .map(Post::getId)
       .toList();
-    
-    // Нужно получить только само изображение(base64), а не объект изображения
-    // Клиент неправильно из-за этого рендерит страницу
     
     List<Image> imageList = this.imageService.findByOwnerIdIn(postIds);
     Map<Long, List<Image>> imagesByPostId = imageList.stream()
       .collect(Collectors.groupingBy(Image::getOwnerId));
     
-    List<PostResponseDTO> responseDTOList = postCaches.stream()
+    List<PostResponseDTO> responseDTOList = posts.stream()
       .map(post -> {
         var dto = new PostResponseDTO();
         BeanUtils.copyProperties(post, dto);
