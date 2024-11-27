@@ -163,5 +163,4 @@ public class PostController {
     BeanUtils.copyProperties(post, responseDTO);
     return responseDTO;
   }
-  
 }
