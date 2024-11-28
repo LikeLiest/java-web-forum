@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import ru.forum.forum.cache.PostCache;
+import ru.forum.forum.model.cache.PostCache;
 
 @Configuration
 @EnableRedisRepositories

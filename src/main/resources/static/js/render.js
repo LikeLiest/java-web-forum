@@ -158,4 +158,3 @@ export function renderPostComments(container, postComment) {
     commentsTitle.appendChild(commentsUl);
     container.appendChild(commentsTitle);
 }
-

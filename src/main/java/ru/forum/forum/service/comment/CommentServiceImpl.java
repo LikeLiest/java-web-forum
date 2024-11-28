@@ -7,6 +7,7 @@ import ru.forum.forum.model.comment.Comment;
 import ru.forum.forum.repository.CommentRepository;
 
 import java.util.List;
+import java.util.Spliterator;
 import java.util.stream.StreamSupport;
 
 
@@ -17,8 +18,8 @@ public class CommentServiceImpl implements CommentService {
   private final CommentRepository commentRepository;
   
   @Override
-  public Comment addComment(Comment comment) {
-    return this.commentRepository.save(comment);
+  public void addComment(Comment comment) {
+    this.commentRepository.save(comment);
   }
   
   @Override
@@ -36,5 +37,11 @@ public class CommentServiceImpl implements CommentService {
   public List<Comment> getAllComments() {
     Iterable<Comment> commentIterable = this.commentRepository.findAll();
     return StreamSupport.stream(commentIterable.spliterator(), false).toList();
+  }
+  
+  @Override
+  public List<Comment> getAllCommentsByArticle(String article) {
+    Spliterator<Comment> commentSpliterator = this.commentRepository.findAllByPostArticle(article).spliterator();
+    return StreamSupport.stream(commentSpliterator, false).toList();
   }
 }

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.forum.forum.cache.PostCache;
+import ru.forum.forum.model.cache.PostCache;
 import ru.forum.forum.model.ApiResponse;
 import ru.forum.forum.model.image.Image;
 import ru.forum.forum.model.post.Post;
@@ -13,7 +13,7 @@ import ru.forum.forum.model.post.PostRequestDTO;
 import ru.forum.forum.model.post.PostResponseDTO;
 import ru.forum.forum.service.image.ImageService;
 import ru.forum.forum.service.post.PostService;
-import ru.forum.forum.service.redis.PostCacheService;
+import ru.forum.forum.service.redis.postCache.PostCacheService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +27,8 @@ public class PostController {
   private final PostService postService;
   private final ImageService imageService;
   private final PostCacheService postCacheService;
+  
+  // TODO -> ПЕРЕПИСАТЬ ВСЕ RESPONSE ENTITY ДОБАВИВ В НИХ APIRESPONSE
   
   @GetMapping("{id:[0-9]+}")
   public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(@PathVariable("id") long id) {

@@ -1,4 +1,4 @@
-package ru.forum.forum.cache;
+package ru.forum.forum.model.cache;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

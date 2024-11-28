@@ -10,6 +10,23 @@
 </head>
 <body>
 <div id="render-info"></div>
+
+<div id="comment-container">
+    <div>
+        <img src="/images/defaultImage.jpg" id="user-icon" alt="user icon">
+        <h3 id="username">username</h3>
+    </div>
+    <label>
+        <textarea id="comment-text" name="content" placeholder="Оставьте здесь свой комментарий"></textarea>
+    </label>
+    <button id="add-comment" type="submit">Отправить</button>
+</div>
+
+<div class="comments-section">
+    <h2>Комментарии:</h2>
+    <ul id="commentsList"></ul>
+</div>
 </body>
 <script src="/js/renderPostInfo.js" defer type="module"></script>
+<script src="/js/comment.js" defer type="module"></script>
 </html>

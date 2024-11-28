@@ -1,9 +1,9 @@
-package ru.forum.forum.service.redis;
+package ru.forum.forum.service.redis.postCache;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.forum.forum.cache.PostCache;
+import ru.forum.forum.model.cache.PostCache;
 import ru.forum.forum.repository.redis.PostCacheRepository;
 
 import java.util.List;
@@ -17,8 +17,8 @@ public class PostCacheServiceImpl implements PostCacheService {
   private final PostCacheRepository postCacheRepository;
   
   @Override
-  public PostCache savePost(PostCache cache) {
-    return this.postCacheRepository.save(cache);
+  public void savePost(PostCache cache) {
+    this.postCacheRepository.save(cache);
   }
   
   @Override

@@ -1,11 +1,11 @@
-package ru.forum.forum.service.redis;
+package ru.forum.forum.service.redis.postCache;
 
-import ru.forum.forum.cache.PostCache;
+import ru.forum.forum.model.cache.PostCache;
 
 import java.util.List;
 
 public interface PostCacheService {
-  PostCache savePost(PostCache cache);
+  void savePost(PostCache cache);
   
   void deletePostById(long id);
   

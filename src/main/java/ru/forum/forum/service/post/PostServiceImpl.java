@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.forum.forum.cache.PostCache;
 import ru.forum.forum.model.post.Post;
 import ru.forum.forum.repository.PostRepository;
 import ru.forum.forum.service.image.ImageService;
-import ru.forum.forum.service.redis.PostCacheService;
 
 import java.util.List;
 import java.util.Optional;

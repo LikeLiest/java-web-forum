@@ -12,7 +12,7 @@ build/
 .project
 .settings
 .springBeans
-.sts4-ru.forum.forum.cache
+.sts4-ru.forum.forum.model.cache
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/

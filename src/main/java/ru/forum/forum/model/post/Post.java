@@ -1,5 +1,6 @@
 package ru.forum.forum.model.post;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -7,6 +8,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.CollectionType;
 import ru.forum.forum.model.comment.Comment;
 
 import java.time.ZonedDateTime;
@@ -18,6 +22,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@Slf4j
 public class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +40,13 @@ public class Post {
   
   private String dateOfCreate;
   
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
-  private List<Comment> comment = new ArrayList<>();
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", orphanRemoval = true)
+  @JsonManagedReference
+  private List<Comment> comments = new ArrayList<>();
   
   public void addComment(Comment comment) {
-    this.comment.add(comment);
+    log.info("{}", comment);
+    this.comments.add(comment);
   }
   
   @PrePersist
