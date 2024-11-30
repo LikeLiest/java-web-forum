@@ -32,23 +32,4 @@ public class MyUserDetails implements UserDetails {
     return myUser.getUsername();
   }
   
-  @Override
-  public boolean isAccountNonExpired() {
-    return myUser.getMyUserInfo().isAccountNonExpired();
-  }
-  
-  @Override
-  public boolean isAccountNonLocked() {
-    return myUser.getMyUserInfo().isAccountNonLocked();
-  }
-  
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return myUser.getMyUserInfo().isCredentialsNonExpired();
-  }
-  
-  @Override
-  public boolean isEnabled() {
-    return myUser.getMyUserInfo().isEnabled();
-  }
 }

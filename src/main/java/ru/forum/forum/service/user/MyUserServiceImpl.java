@@ -2,10 +2,13 @@ package ru.forum.forum.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.forum.forum.model.user.MyUser;
+import ru.forum.forum.model.user.role.Role;
 import ru.forum.forum.repository.MyUserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -13,9 +16,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MyUserServiceImpl implements MyUserService {
   private final MyUserRepository myUserRepository;
+  private final PasswordEncoder passwordEncoder;
   
   @Override
   public void saveUser(MyUser myUser) {
+    String password = myUser.getPassword();
+    String encodedPassword = this.passwordEncoder.encode(password);
+    myUser.setPassword(encodedPassword);
+    
+    myUser.setRoles(List.of(Role.USER));
+    
     this.myUserRepository.save(myUser);
   }
   

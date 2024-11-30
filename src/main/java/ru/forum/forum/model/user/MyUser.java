@@ -4,14 +4,20 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.springframework.data.repository.cdi.Eager;
 import ru.forum.forum.model.post.Post;
 import ru.forum.forum.model.user.role.Role;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@ToString
 public class MyUser {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,19 +27,15 @@ public class MyUser {
   private String password;
   private String userIcon;
   
-  @Enumerated(EnumType.STRING)
   @ElementCollection
-  private List<Role> roles;
+  @Fetch(value = FetchMode.JOIN)
+  private List<Role> roles =  new ArrayList<>();
   
   @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "myUser")
   @JsonManagedReference(value = "myuserLocationInfo")
   private MyUserLocationInfo myUserLocationInfo;
   
-  @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "myUser")
-  @JsonManagedReference(value = "myUserInfo")
-  private MyUserInfo myUserInfo;
-  
-  @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "myUser")
+  @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "myUser")
   @JsonManagedReference(value = "postList")
   private List<Post> postList;
   

@@ -20,18 +20,23 @@ public class SSRController {
     return "postInfo";
   }
   
-  @GetMapping("auth/signin")
-  public String signin() {
-    return "auth/signin";
+  @GetMapping("signup")
+  public String signun() {
+    return "signup";
   }
   
-  @GetMapping("auth/signup")
-  public String signup() {
-    return "auth/signup";
+  @GetMapping("signin")
+  public String signin() {
+    return "signin";
   }
   
   @GetMapping("error")
   public String error() {
     return "error/error";
+  }
+  
+  @GetMapping("my-account")
+  public String account() {
+    return "account";
   }
 }

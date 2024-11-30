@@ -1,14 +1,10 @@
 spring:
-  security:
-    user:
-      name: user
-      password: qwerty
   datasource:
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
     url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DATABASE}
   profiles:
-    active: dev
+    active: ${ACTIVE_PROFILE:dev}
   devtools:
     restart:
       enabled: true
@@ -17,6 +13,7 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
+    open-in-view: true
   data:
     redis:
       host: localhost
