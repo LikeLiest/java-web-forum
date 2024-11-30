@@ -29,7 +29,8 @@ public class Comment {
   private String postArticle;
   private String dateOfCreated;
   
-  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  //  TODO
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonBackReference
   private Post post;
 }

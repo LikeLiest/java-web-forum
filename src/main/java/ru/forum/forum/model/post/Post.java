@@ -1,5 +1,6 @@
 package ru.forum.forum.model.post;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CollectionType;
 import ru.forum.forum.model.comment.Comment;
+import ru.forum.forum.model.user.MyUser;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -41,8 +43,13 @@ public class Post {
   private String dateOfCreate;
   
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", orphanRemoval = true)
-  @JsonManagedReference
+  @JsonManagedReference(value = "comments")
   private List<Comment> comments = new ArrayList<>();
+  
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonBackReference(value = "post")
+  @JoinColumn(name = "myuser_id")
+  private MyUser myUser;
   
   public void addComment(Comment comment) {
     log.info("{}", comment);

@@ -2,7 +2,6 @@ package ru.forum.forum.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class SSRController {
@@ -19,5 +18,20 @@ public class SSRController {
   @GetMapping("info")
   public String postInfo() {
     return "postInfo";
+  }
+  
+  @GetMapping("auth/signin")
+  public String signin() {
+    return "auth/signin";
+  }
+  
+  @GetMapping("auth/signup")
+  public String signup() {
+    return "auth/signup";
+  }
+  
+  @GetMapping("error")
+  public String error() {
+    return "error/error";
   }
 }
