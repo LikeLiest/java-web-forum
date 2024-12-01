@@ -1,4 +1,4 @@
-package ru.forum.forum.config;
+package ru.forum.forum.configuration.redisConfig;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

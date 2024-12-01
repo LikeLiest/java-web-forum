@@ -10,11 +10,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.forum.forum.model.ApiResponse;
+import ru.forum.forum.model.image.Image;
 import ru.forum.forum.model.user.MyUser;
 import ru.forum.forum.model.user.credentials.Credentials;
+import ru.forum.forum.model.user.credentials.RegisterCredentials;
+import ru.forum.forum.service.image.ImageService;
 import ru.forum.forum.service.user.MyUserService;
 
 @Slf4j
@@ -23,9 +25,9 @@ import ru.forum.forum.service.user.MyUserService;
 public class AuthenticationController {
   private final PasswordEncoder encoder;
   private final MyUserService myUserService;
+  private final ImageService imageService;
   
   @PostMapping("/signin")
-  @Transactional
   public ResponseEntity<ApiResponse<MyUser>> login(@RequestBody Credentials credentials) {
     String username = credentials.getUsername();
     String password = credentials.getPassword();
@@ -48,11 +50,18 @@ public class AuthenticationController {
   
   @PostMapping("signup")
   @Transactional
-  public ResponseEntity<ApiResponse<MyUser>> signUp(@RequestParam String username, @RequestParam String password) {
+  public ResponseEntity<ApiResponse<MyUser>> signUp(@RequestBody RegisterCredentials credentials) {
     MyUser myUser = new MyUser();
-    myUser.setPassword(password);
-    myUser.setUsername(username);
-    this.myUserService.saveUser(myUser);
+    BeanUtils.copyProperties(credentials, myUser);
+    
+    MyUser user = this.myUserService.saveUser(myUser);
+    
+    Image image = new Image();
+    image.setBase64(credentials.getBase64String());
+    image.setOwner(user.getUsername());
+    image.setOwnerId(user.getId());
+    
+    this.imageService.save(image);
     
     return ResponseEntity.ok(new ApiResponse<>(true, "Успешная регистрация", myUser));
   }

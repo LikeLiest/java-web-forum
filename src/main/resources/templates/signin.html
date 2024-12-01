@@ -8,17 +8,27 @@
     <title>Document</title>
 </head>
 <body>
-<section>
-    <h1>АВТОРИЗАЦИЯ</h1>
-    <form action="/signin" method="post">
-        <input type="text" placeholder="username" name="username">
-        <input type="text" placeholder="password" name="password">
-        <button id="send" type="submit">send</button>
-    </form>
-</section>
+<div id="root">
+    <header>
+        <ul>
+            <li>
+                <a href="/signup">Регистрация</a>
+                <a href="/signin">Авторизация</a>
+                <a href="/my-account">Аккаунт</a>
+                <a href="/dashboard">Главная страница</a>
+                <a href="/create">Добавить пост</a>
+            </li>
+        </ul>
+    </header>
 
-<script>
-
-</script>
+    <section>
+        <h1>АВТОРИЗАЦИЯ</h1>
+        <form action="/signin" method="post">
+            <input type="text" placeholder="username" name="username">
+            <input type="text" placeholder="password" name="password">
+            <button id="send" type="submit">send</button>
+        </form>
+    </section>
+</div>
 </body>
 </html>

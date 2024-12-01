@@ -19,7 +19,7 @@ public class MyUserDetailsService implements UserDetailsService {
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     MyUser user = this.myUserService.getMyUser(username)
       .orElseThrow(() -> new UsernameNotFoundException("Пользователь %s не найден".formatted(username)));
-    log.info("Найден пользователь: {}", user.toString());
+    log.info("Найден пользователь: {}", user);
     return new MyUserDetails(user);
   }
 }

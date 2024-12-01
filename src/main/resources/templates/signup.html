@@ -9,14 +9,70 @@
 </head>
 <body>
 <div id="root">
+    <header>
+        <ul>
+            <li>
+                <a href="/signup">Регистрация</a>
+                <a href="/signin">Авторизация</a>
+                <a href="/my-account">Аккаунт</a>
+                <a href="/dashboard">Главная страница</a>
+                <a href="/create">Добавить пост</a>
+            </li>
+        </ul>
+    </header>
+
     <section>
         <h1>РЕГИСТРАЦИЯ</h1>
-        <form action="http://localhost:8080/signup" method="post">
+        <form>
             <input type="text" placeholder="login" name="username">
             <input type="text" placeholder="password" name="password">
-            <button type="submit">send</button>
+            <input type="file" name="userIcon" id="userIcon">
+            <input type="email" name="email" id="email">
+            <button type="submit">Зарегестрироваться</button>
         </form>
     </section>
+
+    <script>
+        const btn = document.querySelector('form button')
+        btn.onclick = event => {
+            event.preventDefault()
+            const form = document.querySelector('form')
+            const formData = new FormData(form)
+
+            const formObject = Object.fromEntries(formData.entries())
+            const userIcon = formData.get('userIcon')
+            console.log("USERICON: ", userIcon)
+            console.log(formObject)
+
+            if (userIcon && userIcon.size > 0) {
+                const fr = new FileReader()
+
+                fr.onloadend = () => {
+                    formObject.userIcon = fr.result.split(',')[1]
+                    console.log("SRC: ", userIcon.src)
+                    register(formObject)
+                }
+
+                fr.readAsDataURL(userIcon)
+            } else {
+                register(formObject)
+            }
+
+        }
+
+        async function register(credentials) {
+            const response = await fetch('signup', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(credentials)
+            })
+
+            console.log("RESPONSE: ", response)
+            const data = await response.json();
+            console.log("DATA: ", data)
+            return data
+        }
+    </script>
 </div>
 </body>
 </html>

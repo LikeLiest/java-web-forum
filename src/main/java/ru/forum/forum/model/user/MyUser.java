@@ -13,6 +13,7 @@ import ru.forum.forum.model.user.role.Role;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -23,17 +24,21 @@ public class MyUser {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   
+  @Column(unique = true)
   private String username;
-  private String password;
-  private String userIcon;
+  @Column(unique = true)
+  private String email;
   
-  @ElementCollection
-  @Fetch(value = FetchMode.JOIN)
-  private List<Role> roles =  new ArrayList<>();
+  private String password;
+  
+  @Enumerated(EnumType.STRING)
+  private Role role;
   
   @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "myUser")
   @JsonManagedReference(value = "myuserLocationInfo")
   private MyUserLocationInfo myUserLocationInfo;
+  
+  //MY_USER_ADDITIONAL_INFO
   
   @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "myUser")
   @JsonManagedReference(value = "postList")

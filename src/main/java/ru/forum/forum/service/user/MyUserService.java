@@ -5,7 +5,7 @@ import ru.forum.forum.model.user.MyUser;
 import java.util.Optional;
 
 public interface MyUserService {
-  void saveUser(MyUser myUser);
+  MyUser saveUser(MyUser myUser);
 
   void deleteUser(Long id);
 

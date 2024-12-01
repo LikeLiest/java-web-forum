@@ -8,8 +8,11 @@ import ru.forum.forum.model.user.MyUser;
 import ru.forum.forum.model.user.role.Role;
 import ru.forum.forum.repository.MyUserRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -19,14 +22,15 @@ public class MyUserServiceImpl implements MyUserService {
   private final PasswordEncoder passwordEncoder;
   
   @Override
-  public void saveUser(MyUser myUser) {
+  public MyUser saveUser(MyUser myUser) {
     String password = myUser.getPassword();
     String encodedPassword = this.passwordEncoder.encode(password);
     myUser.setPassword(encodedPassword);
     
-    myUser.setRoles(List.of(Role.USER));
+    myUser.setRole(Role.USER);
+    log.info("ROLES:  {}", myUser.getRole());
     
-    this.myUserRepository.save(myUser);
+    return this.myUserRepository.save(myUser);
   }
   
   @Override
