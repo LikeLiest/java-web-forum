@@ -1,8 +1,11 @@
 package ru.forum.forum.configuration;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,12 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.forum.forum.service.user.MyUserDetailsService;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -35,28 +34,21 @@ public class SecurityConfiguration {
     provider.setUserDetailsService(myUserDetailsService());
     
     return http
-      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-      
+      .cors(AbstractHttpConfigurer::disable)
       .csrf(AbstractHttpConfigurer::disable)
       
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/my-account/**").authenticated()
-        .requestMatchers("/**").permitAll()
-      )
-
-      .formLogin(login -> login
-        .loginPage("/signin")
-        .defaultSuccessUrl("/my-account", true)
-        .failureForwardUrl("/signin?error=true")
+//        .requestMatchers("/my-account/**").authenticated()
+        .requestMatchers("/signin", "/**").permitAll()
       )
       
       .authenticationProvider(provider)
-
-      .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-
+      
+      .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      
       .exceptionHandling(exc -> exc
         .accessDeniedPage("/error")
-        .authenticationEntryPoint((_, response, _) -> response.sendRedirect("/signin"))
+        .authenticationEntryPoint((_, response, _) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
       )
       
       .build();
@@ -68,15 +60,20 @@ public class SecurityConfiguration {
   }
   
   @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration corsConfiguration = new CorsConfiguration();
-    corsConfiguration.setAllowedOrigins(List.of("**"));
-    corsConfiguration.setAllowedMethods(List.of("**"));
-    corsConfiguration.setAllowedHeaders(List.of("**"));
-    corsConfiguration.setAllowCredentials(true);
-
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", corsConfiguration);
-    return source;
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    return configuration.getAuthenticationManager();
   }
+  
+//  @Bean
+//  public CorsConfigurationSource corsConfigurationSource() {
+//    CorsConfiguration corsConfiguration = new CorsConfiguration();
+//    corsConfiguration.setAllowedOrigins(List.of("**"));
+//    corsConfiguration.setAllowedMethods(List.of("**"));
+//    corsConfiguration.setAllowedHeaders(List.of("**"));
+//    corsConfiguration.setAllowCredentials(true);
+//
+//    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//    source.registerCorsConfiguration("/**", corsConfiguration);
+//    return source;
+//  }
 }

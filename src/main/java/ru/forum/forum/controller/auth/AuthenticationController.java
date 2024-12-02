@@ -1,12 +1,18 @@
 package ru.forum.forum.controller.auth;
 
 
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,35 +23,40 @@ import ru.forum.forum.model.user.MyUser;
 import ru.forum.forum.model.user.credentials.Credentials;
 import ru.forum.forum.model.user.credentials.RegisterCredentials;
 import ru.forum.forum.service.image.ImageService;
+import ru.forum.forum.service.jwt.JWTService;
 import ru.forum.forum.service.user.MyUserService;
+
+import java.time.Duration;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthenticationController {
-  private final PasswordEncoder encoder;
   private final MyUserService myUserService;
   private final ImageService imageService;
+  private final AuthenticationManager authenticationManager;
+  private final JWTService jwtService;
   
   @PostMapping("/signin")
-  public ResponseEntity<ApiResponse<MyUser>> login(@RequestBody Credentials credentials) {
-    String username = credentials.getUsername();
-    String password = credentials.getPassword();
+  public ResponseEntity<?> login(@RequestBody Credentials credentials, HttpServletResponse servletResponse) {
+    log.info("{}", credentials.toString());
     
-    if (password == null)
-      return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Неуспешная попытка авторизации", null));
+    String token = verify(credentials);
     
-    MyUser user = this.myUserService.getMyUser(username)
-      .orElseThrow(() -> new UsernameNotFoundException("Пользователь с таким именем не найден"));
+    if ("fail".equals(token))
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неправильный логин или пароль");
     
-    String userPassword = user.getPassword();
+    ResponseCookie cookie = ResponseCookie.from("token", token)
+      .httpOnly(true)
+      .secure(true)
+      .sameSite("Strict")
+      .path("/")
+      .maxAge(Duration.ofHours(1))
+      .build();
     
-    if (encoder.matches(password, userPassword)) {
-      log.info("Успешная попытка авторизации {}, {}", username, password);
-      return ResponseEntity.ok().body(new ApiResponse<>(true, "Успешная попытка авторизации", user));
-    }
+    servletResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     
-    return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Неуспешная попытка авторизации", null));
+    return ResponseEntity.ok(new JwtResponse(token));
   }
   
   @PostMapping("signup")
@@ -64,5 +75,22 @@ public class AuthenticationController {
     this.imageService.save(image);
     
     return ResponseEntity.ok(new ApiResponse<>(true, "Успешная регистрация", myUser));
+  }
+  
+  private String verify(Credentials credentials) {
+    Authentication authentication = this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+      credentials.getUsername(),
+      credentials.getPassword()
+    ));
+    
+    if (authentication.isAuthenticated())
+      return this.jwtService.generateToken(credentials.getUsername());
+    return "fail";
+  }
+  
+  @Getter
+  @RequiredArgsConstructor
+  public static class JwtResponse {
+    private final String token;
   }
 }

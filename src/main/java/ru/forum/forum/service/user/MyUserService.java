@@ -1,6 +1,7 @@
 package ru.forum.forum.service.user;
 
 import ru.forum.forum.model.user.MyUser;
+import ru.forum.forum.model.user.credentials.Credentials;
 
 import java.util.Optional;
 
@@ -18,4 +19,5 @@ public interface MyUserService {
   MyUser fullUpdateMyUser(MyUser myUser);
 
   MyUser patchUpdateMyUser(String... values);
+  
 }

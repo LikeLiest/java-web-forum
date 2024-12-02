@@ -36,4 +36,9 @@ public class GlobalExceptionHandler {
   public ResponseEntity<String> handleInternalError(HttpServerErrorException.InternalServerError e) {
     return ResponseEntity.badRequest().body(e.getMessage());
   }
+  
+  @ExceptionHandler(InternalError.class)
+  public ResponseEntity<String> handleInternalError(InternalError e) {
+    return ResponseEntity.badRequest().body(e.getMessage());
+  }
 }

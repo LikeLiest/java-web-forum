@@ -29,6 +29,8 @@ public class MyUser {
   @Column(unique = true)
   private String email;
   
+  private String token;
+  
   private String password;
   
   @Enumerated(EnumType.STRING)

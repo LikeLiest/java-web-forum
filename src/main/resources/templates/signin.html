@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Авторизация</title>
 </head>
 <body>
 <div id="root">
@@ -14,7 +14,7 @@
             <li>
                 <a href="/signup">Регистрация</a>
                 <a href="/signin">Авторизация</a>
-                <a href="/my-account">Аккаунт</a>
+                <button onclick="redirectToAccountPage()">Аккаунт</button>
                 <a href="/dashboard">Главная страница</a>
                 <a href="/create">Добавить пост</a>
             </li>
@@ -23,12 +23,57 @@
 
     <section>
         <h1>АВТОРИЗАЦИЯ</h1>
-        <form action="/signin" method="post">
+        <form>
             <input type="text" placeholder="username" name="username">
             <input type="text" placeholder="password" name="password">
-            <button id="send" type="submit">send</button>
+            <button id="send" type="submit">Авторизоваться</button>
         </form>
     </section>
 </div>
+
+<script>
+    async function redirectToAccountPage() {
+        const response = await fetch('/my-account', {
+            method: 'GET',
+            credentials: "include"
+        });
+
+        if(!response.ok)
+            throw new Error('Ошибка авторизации или доступа')
+
+        const data = await response.json()
+        console.log('Информация о аккаунте: ', data)
+    }
+
+    authenticate()
+
+    async function authenticate() {
+        const form = document.querySelector('form')
+        const send = document.querySelector('#send')
+
+        send.onclick = async event => {
+            event.preventDefault()
+
+            const formData = new FormData(form)
+            const formObject = Object.fromEntries(formData.entries())
+
+            console.log(formObject)
+
+            await authorization(formObject)
+        }
+    }
+
+    async function authorization(credentials) {
+        const response = await fetch('signin', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(credentials)
+        });
+
+        const data = await response.json()
+        console.log("RESULT: ", data)
+        return data;
+    }
+</script>
 </body>
 </html>

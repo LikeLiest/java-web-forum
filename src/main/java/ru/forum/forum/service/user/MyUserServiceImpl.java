@@ -2,11 +2,18 @@ package ru.forum.forum.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.forum.forum.model.user.MyUser;
+import ru.forum.forum.model.user.credentials.Credentials;
 import ru.forum.forum.model.user.role.Role;
 import ru.forum.forum.repository.MyUserRepository;
+import ru.forum.forum.service.jwt.JWTService;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,6 +57,7 @@ public class MyUserServiceImpl implements MyUserService {
   
   @Override
   public Optional<MyUser> getMyUser(String username) {
+    log.info("USERNAME: {}",username);
     return this.myUserRepository.findByUsername(username);
   }
   
@@ -62,4 +70,6 @@ public class MyUserServiceImpl implements MyUserService {
   public MyUser patchUpdateMyUser(String... values) {
     return null;
   }
+  
+
 }
